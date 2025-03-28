@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CytidelChallenge.Server", "CytidelChallenge.Server\CytidelChallenge.Server.csproj", "{C81987E4-2C23-47B4-ADF7-1E4262C1AC6B}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "cytidelchallenge.client", "cytidelchallenge.client\cytidelchallenge.client.esproj", "{FDAE0225-D3B5-46D0-A192-A09770B5506E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C81987E4-2C23-47B4-ADF7-1E4262C1AC6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C81987E4-2C23-47B4-ADF7-1E4262C1AC6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C81987E4-2C23-47B4-ADF7-1E4262C1AC6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C81987E4-2C23-47B4-ADF7-1E4262C1AC6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDAE0225-D3B5-46D0-A192-A09770B5506E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDAE0225-D3B5-46D0-A192-A09770B5506E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDAE0225-D3B5-46D0-A192-A09770B5506E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{FDAE0225-D3B5-46D0-A192-A09770B5506E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDAE0225-D3B5-46D0-A192-A09770B5506E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDAE0225-D3B5-46D0-A192-A09770B5506E}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
