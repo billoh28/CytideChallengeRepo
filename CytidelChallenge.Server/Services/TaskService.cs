@@ -6,22 +6,9 @@ namespace CytidelChallenge.Server.Services
     {
         private readonly TaskDbContext _context;
 
-        public TaskService()
+        public TaskService(TaskDbContext context)
         {
-            string databasePath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "MyApp",
-                "tasks.sqlite"
-            );
-
-            string? directory = Path.GetDirectoryName(databasePath);
-            if (directory != null && !Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            _context = new TaskDbContext(databasePath);
-            _context.Database.EnsureCreated();
+            _context = context;
         }
 
         public TaskRecord GetTask(long taskId)
@@ -41,20 +28,6 @@ namespace CytidelChallenge.Server.Services
             return _context.Tasks.ToList();
         }
 
-        /*public List<TaskRecord> GetTasksByStatus(Status status)
-        {
-            return _context.Tasks
-                .Where(t => t.Status == status)
-                .ToList();
-        }
-
-        public List<TaskRecord> GetTasksByPriority(Priority priority)
-        {
-            return _context.Tasks
-                .Where(t => t.Priority == priority)
-                .ToList();
-        }*/
-
         public void CreateTask(TaskRecord task)
         {
             _context.Tasks.Add(task);
@@ -63,7 +36,7 @@ namespace CytidelChallenge.Server.Services
 
         public void UpdateTask(TaskRecord task)
         {
-            var existingTask = _context.Tasks.Find(task.TaskId);
+            var existingTask = _context.Tasks.Where(t => t.TaskId == task.TaskId).FirstOrDefault();
 
             if (existingTask == null)
             {
@@ -76,7 +49,7 @@ namespace CytidelChallenge.Server.Services
 
         public void DeleteTask(long taskId)
         {
-            var task = _context.Tasks.Find(taskId);
+            var task = _context.Tasks.Where(t => t.TaskId == taskId).FirstOrDefault();
 
             if (task == null)
             {

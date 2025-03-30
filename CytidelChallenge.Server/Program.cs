@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddSingleton<TaskDbContext, TaskDbContext>();
 
 var app = builder.Build();
 

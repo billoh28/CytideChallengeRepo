@@ -31,14 +31,6 @@ namespace CytidelChallenge.Server.Controllers
         [HttpGet("{taskId}")]
         public TaskRecord GetTaskSpecific(long taskId)
         {
-            /*_taskService.CreateTask(new TaskRecord {
-                Title = "Testing Data",
-                Description = "Testing data for testing DB and that",
-                DueDate = DateTime.Now,
-                Priority = Priority.Low,
-                Status = Status.InProgress
-            });*/
-
             var result = _taskService.GetTask(taskId);
 
             return result;
@@ -48,6 +40,22 @@ namespace CytidelChallenge.Server.Controllers
         public IActionResult CreateTask([FromBody] TaskRecord record)
         {
             _taskService.CreateTask(record);
+
+            return Ok();
+        }
+
+        [HttpPut("{taskId}")]
+        public IActionResult UpdateTask([FromBody] TaskRecord record)
+        {
+            _taskService.UpdateTask(record);
+
+            return Ok();
+        }
+
+        [HttpDelete("{taskId}")]
+        public IActionResult DeleteTask(long taskId)
+        {
+            _taskService.DeleteTask(taskId);
 
             return Ok();
         }
