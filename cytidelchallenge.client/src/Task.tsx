@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PieChart from './Piechart'
 
 // Enum types to match your C# model
 enum Priority {
@@ -162,11 +163,11 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
         } catch (err) {
             console.error('Create task error:', err);
 
-            if (err.message.includes('status: 403')) {
+            if (err instanceof Error && err.message.includes('status: 403')) {
                 alert('You do not have permission to do this action');
             }
             else {
-                alert(`Error : ${err.message}`);
+                alert(`Error : ${err}`);
             }
 
             resetForm();
@@ -207,11 +208,11 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
         } catch (err) {
             console.error('Update task error:', err);
 
-            if (err.message.includes('status: 403')) {
+            if (err instanceof Error && err.message.includes('status: 403')) {
                 alert('You do not have permission to do this action');
             }
             else {
-                alert(`Error : ${err.message}`);
+                alert(`Error : ${err}`);
             }
 
             resetForm();
@@ -247,11 +248,11 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
         } catch (err) {
             console.error('Delete task error:', err);
 
-            if (err.message.includes('status: 403')) {
+            if (err instanceof Error && err.message.includes('status: 403')) {
                 alert('You do not have permission to do this action');
             }
             else {
-                alert(`Error : ${err.message}`);
+                alert(`Error : ${err}`);
             }
 
             resetForm();
@@ -301,8 +302,17 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
         );
     }
 
+    const countPending = tasks.map(t => t.status).filter(t => t == Status.Pending).length;
+    const countInProgress = tasks.map(t => t.status).filter(t => t == Status.InProgress).length;
+    const countCompleted = tasks.map(t => t.status).filter(t => t == Status.Completed).length;
+    const countArchived = tasks.map(t => t.status).filter(t => t == Status.Archived).length;
+    const labels = ["Pending", "In Progress", "Completed", "Archived"];
+    const values = [countPending, countInProgress, countCompleted, countArchived];
+
     return (
         <div className="w-full p-4">
+            <PieChart labels={labels} values={values} />
+
             {/* Create Task Button */}
             <div className="mb-4">
                 <button
@@ -372,8 +382,8 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
                             </div>
 
                             {isHighPriority &&
-                                <div class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300" role="alert">
-                                    <span class="font-medium">Warning!</span> Are you sure you want to set the task to such a high priority?
+                                <div className="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300" role="alert">
+                                    <span className="font-medium">Warning!</span> Are you sure you want to set the task to such a high priority?
                                 </div>
                             }
 
