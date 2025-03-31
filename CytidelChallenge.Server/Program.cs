@@ -52,4 +52,6 @@ app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
 
+app.UseRequestLogging();
+
 app.Run();

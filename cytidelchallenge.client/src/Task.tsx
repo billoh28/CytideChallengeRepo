@@ -146,6 +146,7 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${jwtToken}`,
+                    'High-Priority': `${isHighPriority}`,
                 },
                 body: JSON.stringify(taskForm)
             });
@@ -187,6 +188,7 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${jwtToken}`,
+                    'High-Priority': `${isHighPriority}`,
                 },
                 body: JSON.stringify({
                     taskId: currentTaskId,
