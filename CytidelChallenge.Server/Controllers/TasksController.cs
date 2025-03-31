@@ -7,6 +7,7 @@ namespace CytidelChallenge.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class TasksController : ControllerBase
     {
 
@@ -24,9 +25,10 @@ namespace CytidelChallenge.Server.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public IEnumerable<TaskRecord> GetTasks()
         {
+            _logger.LogInformation("HTTPGet GetTasks");
+
             var results = new List<TaskRecord>();
 
             results = _taskService.GetAllTasks();
@@ -35,44 +37,54 @@ namespace CytidelChallenge.Server.Controllers
         }
 
         [HttpGet("{taskId}")]
-        [Authorize]
         public TaskRecord GetTaskSpecific(long taskId)
         {
+            _logger.LogInformation("HTTPGet GetTasks");
+
             var result = _taskService.GetTask(taskId);
 
             return result;
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public IActionResult CreateTask([FromBody] TaskRecord record)
         {
+            _logger.LogInformation("HTTPPost CreateTask");
+
             _taskService.CreateTask(record);
 
             return Ok();
         }
 
         [HttpPut("{taskId}")]
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public IActionResult UpdateTask([FromBody] TaskRecord record)
         {
+            _logger.LogInformation("HTTPPost UpdateTask");
+
             _taskService.UpdateTask(record);
 
             return Ok();
         }
 
         [HttpDelete("{taskId}")]
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public IActionResult DeleteTask(long taskId)
         {
+            _logger.LogInformation("HTTPDelete DeleteTask");
+
             _taskService.DeleteTask(taskId);
 
             return Ok();
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public IActionResult Login(LoginModel loginModel)
         {
+            _logger.LogInformation("HTTPPost Login");
+
             var token = "";
 
             try

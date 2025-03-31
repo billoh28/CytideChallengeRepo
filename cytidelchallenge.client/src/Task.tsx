@@ -37,12 +37,12 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
     const [tasks, setTasks] = useState<TaskRecord[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [token, setToken] = useState<string | null>();
 
     // State for modal
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [isUpdateMode, setIsUpdateMode] = useState<boolean>(false);
     const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
+    const [isHighPriority, setIsHighPriority] = useState<boolean>(false);
     const [currentTaskId, setCurrentTaskId] = useState<number | null>(null);
     const [taskForm, setTaskForm] = useState<TaskForm>({
         title: '',
@@ -58,8 +58,8 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
             const response = await fetch('tasks', {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json', 
-                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwtToken}`,
                 },
             });
 
@@ -78,13 +78,10 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
     };
 
     useEffect(() => {
-        if (token) {
+        if (jwtToken) {
             fetchTasks();
         }
-    }, [token]);
-
-    useEffect(() => {
-        setToken(jwtToken);
+        // If here before logout
     }, [jwtToken]);
 
     // Reset form to default values
@@ -100,6 +97,7 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
         setIsUpdateMode(false);
         setIsModalOpen(false);
         setIsAlertOpen(false);
+        setIsHighPriority(false);
     };
 
     // Open modal for creating a new task
@@ -147,7 +145,7 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${jwtToken}`,
                 },
                 body: JSON.stringify(taskForm)
             });
@@ -162,7 +160,15 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
             resetForm();
         } catch (err) {
             console.error('Create task error:', err);
-            alert('Failed to create task');
+
+            if (err.message.includes('status: 403')) {
+                alert('You do not have permission to do this action');
+            }
+            else {
+                alert(`Error : ${err.message}`);
+            }
+
+            resetForm();
         }
     };
 
@@ -180,7 +186,7 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${jwtToken}`,
                 },
                 body: JSON.stringify({
                     taskId: currentTaskId,
@@ -198,11 +204,18 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
             resetForm();
         } catch (err) {
             console.error('Update task error:', err);
-            alert('Failed to update task');
+
+            if (err.message.includes('status: 403')) {
+                alert('You do not have permission to do this action');
+            }
+            else {
+                alert(`Error : ${err.message}`);
+            }
+
+            resetForm();
         }
     };
 
-    // Handle form submission based on mode (create or update)
     const handleSubmit = (e: React.FormEvent) => {
         if (isUpdateMode) {
             handleUpdateTask(e);
@@ -217,7 +230,7 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${jwtToken}`,
                 }
             });
 
@@ -231,7 +244,15 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
             resetForm();
         } catch (err) {
             console.error('Delete task error:', err);
-            alert('Failed to delete task');
+
+            if (err.message.includes('status: 403')) {
+                alert('You do not have permission to do this action');
+            }
+            else {
+                alert(`Error : ${err.message}`);
+            }
+
+            resetForm();
         }
     };
 
@@ -331,7 +352,15 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
                                 <select
                                     id="priority"
                                     value={taskForm.priority}
-                                    onChange={(e) => setTaskForm({ ...taskForm, priority: Number(e.target.value) as Priority })}
+                                    onChange={(e) => {
+                                        setTaskForm({ ...taskForm, priority: Number(e.target.value) as Priority });
+                                        if (Number(e.target.value) == 2) {
+                                            setIsHighPriority(true);
+                                        }
+                                        else {
+                                            setIsHighPriority(false);
+                                        }
+                                    }}
                                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                 >
                                     <option value={Priority.Low}>Low</option>
@@ -339,6 +368,12 @@ function TaskGrid({ jwtToken }: { jwtToken: string }) {
                                     <option value={Priority.High}>High</option>
                                 </select>
                             </div>
+
+                            {isHighPriority &&
+                                <div class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300" role="alert">
+                                    <span class="font-medium">Warning!</span> Are you sure you want to set the task to such a high priority?
+                                </div>
+                            }
 
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="dueDate">
