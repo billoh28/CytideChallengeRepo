@@ -9,6 +9,7 @@ namespace CytidelChallenge.Server.Services
         public TaskService(TaskDbContext context)
         {
             _context = context;
+            _context.Database.EnsureCreated();
         }
 
         public TaskRecord GetTask(long taskId)
