@@ -6,7 +6,7 @@
 
 ## Running the project
 - Open the project file CytidelChallenge.sln in Visual Studio
-- Once it loads, right light the solution and click `Configure Startup Projects` from the dropdown
+- Once it loads, right click the solution and click `Configure Startup Projects` from the dropdown
 - Select the `Multiple startup projects` radio button.
 - Set the Actions for both the client and the server to `Start`
 
