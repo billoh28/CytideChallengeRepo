@@ -3,3 +3,4 @@ node_modules
 CytidelChallenge.Server/task.sqlite
 CytidelChallenge.Server/task.sqlite-shm
 CytidelChallenge.Server/task.sqlite-wal
+*.slnLaunch.user

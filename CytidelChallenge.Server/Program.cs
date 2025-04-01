@@ -66,6 +66,12 @@ app.UseRequestLogging();
 
 using (var scope = app.Services.CreateScope())
 {
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    context.Database.Migrate();  // This applies any pending migrations
+}
+
+using (var scope = app.Services.CreateScope())
+{
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<TaskUser>>();
 
     string username = "testing";
