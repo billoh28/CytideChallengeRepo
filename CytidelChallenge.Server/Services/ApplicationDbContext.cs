@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CytidelChallenge.Server.Services
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<TaskUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
