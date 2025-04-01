@@ -41,14 +41,7 @@ namespace CytidelChallenge.Server.Services
         {
             if (request.Method == "POST" || request.Method == "PUT")
             {
-                try
-                {
-                    return request.Headers.ContainsKey("High-Priority") && request.Headers["High-Priority"].Equals("true");
-                }
-                catch (Exception ex)
-                {
-                    return false;
-                }
+                return request.Headers.ContainsKey("High-Priority") && request.Headers["High-Priority"].Equals("true");
             }
 
             return false;

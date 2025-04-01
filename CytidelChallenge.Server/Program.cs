@@ -1,5 +1,8 @@
+using CytidelChallenge.Server.Model;
 using CytidelChallenge.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -10,7 +13,6 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<TaskDbContext, TaskDbContext>();
 builder.Services.AddSingleton<ITokenService, TokenService>();
-builder.Services.AddSingleton<IUserService, UsersService>();
 
 // Adding JWT Auth
 builder.Services.AddAuthentication(options =>
@@ -34,6 +36,27 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("UserDBFile")));
+
+builder.Services.AddIdentity<TaskUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+/*builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = 200;
+        return Task.CompletedTask;
+    };
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = 200;
+        return Task.CompletedTask;
+    };
+});*/
+
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
@@ -53,5 +76,22 @@ app.MapControllers();
 app.MapFallbackToFile("/index.html");
 
 app.UseRequestLogging();
+
+using (var scope = app.Services.CreateScope())
+{
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<TaskUser>>();
+
+    string username = "testing";
+    string password = "tEsting1234?";
+    var user = userManager.FindByNameAsync(username).Result;
+
+    if (user == null)
+    {
+        user = new TaskUser { UserName = username };
+
+        var result = userManager.CreateAsync(user, password).Result;
+        Console.WriteLine(result);
+    }
+};
 
 app.Run();

@@ -1,27 +1,33 @@
 using CytidelChallenge.Server.Model;
 using CytidelChallenge.Server.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CytidelChallenge.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TasksController : ControllerBase
     {
 
         private readonly ILogger<TasksController> _logger;
         private ITaskService _taskService;
         private readonly ITokenService _tokenService;
-        private readonly IUserService _userService;
+        private readonly UserManager<TaskUser> _userManager;
+        private readonly SignInManager<TaskUser> _signInManager;
+        private readonly IConfiguration _configuration;
 
-        public TasksController(ITaskService taskService, ILogger<TasksController> logger, ITokenService tokenService, IUserService userService)
+        public TasksController(ITaskService taskService, ILogger<TasksController> logger, ITokenService tokenService, UserManager<TaskUser> userManager, SignInManager<TaskUser> signInManager, IConfiguration configuration)
         {
             _logger = logger;
             _taskService = taskService;
             _tokenService = tokenService;
-            _userService = userService;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -47,7 +53,6 @@ namespace CytidelChallenge.Server.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "admin")]
         public IActionResult CreateTask([FromBody] TaskRecord record)
         {
             _logger.LogInformation("HTTPPost CreateTask");
@@ -58,7 +63,6 @@ namespace CytidelChallenge.Server.Controllers
         }
 
         [HttpPut("{taskId}")]
-        [Authorize(Roles = "admin")]
         public IActionResult UpdateTask([FromBody] TaskRecord record)
         {
             _logger.LogInformation("HTTPPost UpdateTask");
@@ -69,7 +73,6 @@ namespace CytidelChallenge.Server.Controllers
         }
 
         [HttpDelete("{taskId}")]
-        [Authorize(Roles = "admin")]
         public IActionResult DeleteTask(long taskId)
         {
             _logger.LogInformation("HTTPDelete DeleteTask");
@@ -81,28 +84,27 @@ namespace CytidelChallenge.Server.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public IActionResult Login(LoginModel loginModel)
+        public async Task<IActionResult> Login(LoginModel model)
         {
-            _logger.LogInformation("HTTPPost Login");
-
             var token = "";
 
-            try
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password,
+                                                                 isPersistent: false, lockoutOnFailure: true);
+            if (!result.Succeeded)
+                return Unauthorized(new { message = "Invalid login credentials" });
+
+            var user = await _userManager.FindByNameAsync(model.Username);
+
+            if (user != null)
             {
-                var user = _userService.ValidateUser(loginModel.Username, loginModel.Password);
-
-                if (user == null)
-                    return Unauthorized();
-
                 token = _tokenService.GenerateToken(
-                    user.Id.ToString(),
-                    user.Username,
-                    user.Roles
-                );
-            }
-            catch (Exception ex) 
-            {
-                throw ex;
+                        user.Id.ToString(),
+                        user.UserName ?? "",
+                        new List<string>()
+                    );
             }
 
             return Ok(new { token });
