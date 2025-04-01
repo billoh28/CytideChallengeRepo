@@ -23,3 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 obj
+*.db
+*.db-shm
+*.db-wal

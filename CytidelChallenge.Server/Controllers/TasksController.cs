@@ -18,16 +18,14 @@ namespace CytidelChallenge.Server.Controllers
         private readonly ITokenService _tokenService;
         private readonly UserManager<TaskUser> _userManager;
         private readonly SignInManager<TaskUser> _signInManager;
-        private readonly IConfiguration _configuration;
 
-        public TasksController(ITaskService taskService, ILogger<TasksController> logger, ITokenService tokenService, UserManager<TaskUser> userManager, SignInManager<TaskUser> signInManager, IConfiguration configuration)
+        public TasksController(ITaskService taskService, ILogger<TasksController> logger, ITokenService tokenService, UserManager<TaskUser> userManager, SignInManager<TaskUser> signInManager)
         {
             _logger = logger;
             _taskService = taskService;
             _tokenService = tokenService;
             _userManager = userManager;
             _signInManager = signInManager;
-            _configuration = configuration;
         }
 
         [HttpGet]

@@ -14,19 +14,7 @@ namespace CytidelChallenge.Server.Services
 
         public TaskDbContext(IConfiguration config)
         {
-            string databasePath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                config["ConnectionStrings:DatabaseDir"] ?? "",
-                config["ConnectionStrings:DatabaseFile"] ?? ""
-            );
-
-            string? directory = Path.GetDirectoryName(databasePath);
-            if (directory != null && !Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            _databasePath = databasePath;
+            _databasePath = config["ConnectionStrings:DatabaseFile"] ?? "";
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
